@@ -3,28 +3,40 @@ import React, { useState, useEffect } from 'react';
 interface HangmanProps {
   key: number; // Prop para forzar el remontaje
   words: string[];
+  fruitsList: string[];
+  appliancesList: string[];
 }
 
-const Hangman = ({ key, words }: HangmanProps) => {
+const Hangman = ({ words, fruitsList, appliancesList, key }: HangmanProps) => {
   const [selectedWord, setSelectedWord] = useState(words[0]);
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [errorCount, setErrorCount] = useState(0);
 
-  useEffect(() => {
-    setSelectedWord(words[0]); // Reiniciar la palabra seleccionada cuando cambie la prop 'words'
-    setGuessedLetters([]); // Reiniciar las letras adivinadas cuando cambie la prop 'words'
-    setErrorCount(0); // Reiniciar el contador de errores cuando cambie la prop 'words'
-  }, [key, words]);
+const getHint = () =>{
+  if (fruitsList.includes(selectedWord)){
+    return 'the word is a fruit';
+  }else if (appliancesList.includes(selectedWord)){
+    return 'the word is an electronic';
+  }
+  return '';
+};
 
-  const displayWord = selectedWord.split('').map((letter, index) => {
-    console.log("selectedWord: ", selectedWord)
-    if (guessedLetters.includes(letter)) {
+// const displayWord = selectedWord.split('').map((letter, index) => {
+//   if (guessedLetters.includes(letter)) {
+//     return letter;
+//   } else {
+//     return '_';
+//   }
+// });
+   const displayWord = selectedWord.split('').map((letter, index) => {
+     console.log("selectedWord: ", selectedWord)
+     if (guessedLetters.includes(letter)) {
       console.log("guessedLetters: ",guessedLetters)
-      return letter;
-    } else {
-      return '_';
-    }
-  });
+       return letter;
+     } else {
+       return '_';
+     }
+   });
 
   const handleGuess = (letter: string) => {
     if (!guessedLetters.includes(letter)) {
@@ -50,10 +62,7 @@ const Hangman = ({ key, words }: HangmanProps) => {
       <p>{displayWord.join(' ')}</p>
       <input maxLength={1} onChange={(e) => handleGuess(e.target.value)} />
       {(displayWord.join('') === selectedWord || errorCount > 5) && (
-        <button onClick={() => {
-          restartGame();
-          setSelectedWord(words[Math.floor(Math.random() * words.length)]);
-        }}>Select New Word</button>        
+        <button onClick={restartGame}>Select New Word</button>        
       )}
       <p>Cantidad de errores {errorCount}</p>
       {displayWord.join('') === selectedWord && (
